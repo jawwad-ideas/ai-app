@@ -1,12 +1,13 @@
 <?php
 
 namespace App\Services;
+use App\Tools\EmailTool;
 
 use Illuminate\Support\Facades\Http;
 
 class AgentService
 {
-    public function __construct(private LLMService $llm) {}
+    public function __construct(private LLMService $llm, private EmailTool $emailTool) {}
 
     public function execute(string $message): array
     {
@@ -27,14 +28,36 @@ class AgentService
             ];
         }
 
-        // JSON response from Gemini
-        return [
+        return $this->sendEmail($result);
+    }
+
+    private function sendEmail($result=null)
+    {
+        $result = [
             'success'       => true,
             'response_type' => $result['response_type'] ?? 'plan',
             'message'       => $result['message'] ?? '',
             'plan'          => $result['plan'] ?? [],
         ];
+
+        // Execute every step
+        foreach ($result['plan'] as $step) {
+
+                    switch ($step['type']) {
+
+                        case 'send_email':
+
+                            $this->emailTool->execute($step['arguments']);
+
+                            break;
+                    }
+        }
+
+        return $result;
+
     }
+
+   
 
     private  function detectResponseType(string $message): string
     {
