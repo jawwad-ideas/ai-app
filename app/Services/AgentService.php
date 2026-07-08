@@ -61,7 +61,7 @@ class AgentService
 
     private  function detectResponseType(string $message): string
     {
-        if (str_contains(strtolower($message), 'email')) {
+        if (str_contains(strtolower($message), ' send email')) {
             return 'json';
         }
 
