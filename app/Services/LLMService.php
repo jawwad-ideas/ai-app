@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Http;
 
 class LLMService
 {
-    public function generate(string $prompt, string $responseType = 'text'): string|array
+    public function generate(string $prompt, string $responseType = 'text'): array
     {
         $apiKey = config('services.gemini.api_key');
 
@@ -37,7 +37,12 @@ class LLMService
             return json_decode($text, true);
         }
 
-        return $text;
+        return [
+            'success' => true,
+            'response_type' => 'text',
+            'message' => $text,
+            'plan' => [],
+        ];
 
         #return $response['candidates'][0]['content']['parts'][0]['text'] ?? 'No response.';
     }
