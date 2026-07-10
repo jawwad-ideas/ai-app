@@ -39,4 +39,9 @@ return [
         'api_key' => env('GEMINI_API_KEY'),
     ],
 
+    'qdrant' => [
+        'url' => env('QDRANT_URL'),
+        'collection' => env('QDRANT_COLLECTION'),
+    ],
+
 ];

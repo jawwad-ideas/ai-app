@@ -4,18 +4,14 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 
-class LLMService
+class LLMService extends GeminiClient
 {
     public function generate(string $prompt, string $responseType = 'text'): array
     {
-        $apiKey = config('services.gemini.api_key');
-
-        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={$apiKey}";
-
         // Build the final prompt based on the expected response type
         $finalPrompt = $this->buildPrompt($prompt, $responseType);
 
-        $response = Http::post($url, [
+        $payload = [
             'contents' => [
                 [
                     'parts' => [
@@ -25,7 +21,13 @@ class LLMService
                     ]
                 ]
             ]
-        ]);
+        ];
+
+
+        $response = $this->post(
+            'models/gemini-2.5-flash:generateContent',
+            $payload
+        );
 
         if ($response->failed()) {
             throw new \Exception('Gemini API request failed.');
