@@ -7,22 +7,58 @@ use Illuminate\Support\Facades\Http;
 class VectorService
 {
     private string $url;
+    private string $collection;
 
     public function __construct()
     {
         $this->url = config('services.qdrant.url');
+        $this->collection = config('services.qdrant.collection');
     }
 
-    public function createCollection()
+
+    private function request(
+        string $method,
+        string $endpoint,
+        array $data = []
+    ): array {
+        return Http::$method(
+            "{$this->url}{$endpoint}",
+            $data
+        )->json();
+    }
+
+    public function createCollection(): array
     {
-        return Http::put(
-            "{$this->url}/collections/" . config('services.qdrant.collection'),
+        return $this->request(
+            'put',
+            "/collections/{$this->collection}",
             [
                 'vectors' => [
-                    'size' => 3072,
+                    'size' => config('services.qdrant.vector_size'),
                     'distance' => 'Cosine',
                 ]
             ]
-        )->json();
+        );
+    }
+
+    public function store(
+        int $id,
+        array $embedding,
+        array $payload
+    ): array {
+
+        return $this->request(
+            'put',
+            "/collections/{$this->collection}/points",
+            [
+                'points' => [
+                    [
+                        'id' => $id,
+                        'vector' => $embedding,
+                        'payload' => $payload,
+                    ]
+                ]
+            ]
+        );
     }
 }

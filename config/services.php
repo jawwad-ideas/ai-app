@@ -42,6 +42,7 @@ return [
     'qdrant' => [
         'url' => env('QDRANT_URL'),
         'collection' => env('QDRANT_COLLECTION'),
+        'vector_size' => 3072,
     ],
 
 ];

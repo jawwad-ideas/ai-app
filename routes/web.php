@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\KnowledgeController;
 use App\Services\EmbeddingService;
 use App\Services\SimilarityService;
 use App\Services\VectorService;
@@ -16,59 +17,71 @@ Route::get('/', [ChatController::class, 'index']);
 Route::post('/chat', [ChatController::class, 'chat']);
 
 
-Route::get('/vector/create', function (VectorService $vector) {
+Route::prefix('vector')->group(function () {
 
-    return $vector->createCollection();
+    Route::post('/collection', [KnowledgeController::class, 'createCollection']);
 
+    Route::post('/store', [KnowledgeController::class, 'store']);
+
+    Route::post('/search', [KnowledgeController::class, 'search']);
+
+    Route::delete('/{id}', [KnowledgeController::class, 'delete']);
 });
 
 
+// Route::get('/vector/create', function (VectorService $vector) {
 
-Route::get('/embedding-test', function (EmbeddingService $embeddingService) {
+//     return $vector->createCollection();
 
-$documents = [
-
-    [
-        'title'=>'Laravel',
-        'vector'=>[1,2,3]
-    ],
-
-    [
-        'title'=>'Pizza',
-        'vector'=>[8,9,10]
-    ],
-
-    [
-        'title'=>'Football',
-        'vector'=>[20,30,40]
-    ]
-
-];    
+// });
 
 
-$best = null;
-$bestDistance = PHP_FLOAT_MAX;
 
-$similarity = new SimilarityService();
-$question=[1,2,4];
+// Route::get('/embedding-test', function (EmbeddingService $embeddingService) {
 
-foreach($documents as $document){
+// $documents = [
 
-    $distance = $similarity->distance(
-        $question,
-        $document['vector']
-    );
+//     [
+//         'title'=>'Laravel',
+//         'vector'=>[1,2,3]
+//     ],
 
-    if($distance < $bestDistance){
+//     [
+//         'title'=>'Pizza',
+//         'vector'=>[8,9,10]
+//     ],
 
-        $bestDistance = $distance;
-        $best = $document;
+//     [
+//         'title'=>'Football',
+//         'vector'=>[20,30,40]
+//     ]
 
-    }
+// ];    
 
-}
 
-dd($best);
+// $best = null;
+// $bestDistance = PHP_FLOAT_MAX;
+
+// $similarity = new SimilarityService();
+// $question=[1,2,4];
+
+// foreach($documents as $document){
+
+//     $distance = $similarity->distance(
+//         $question,
+//         $document['vector']
+//     );
+
+//     if($distance < $bestDistance){
+
+//         $bestDistance = $distance;
+//         $best = $document;
+
+//     }
+
+// }
+
+// dd($best);
 
 
 
@@ -100,4 +113,4 @@ dd($best);
     //     'embedding2_dimensions' => count($embedding2),
     // ]);
 
-});
+//});
