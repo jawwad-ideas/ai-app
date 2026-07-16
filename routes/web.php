@@ -15,6 +15,10 @@ Route::get('/', function () {
 Route::get('/documents', [DocumentController::class, 'index']);
 Route::post('/documents', [DocumentController::class, 'store']);
 
+
+Route::get('/search', [DocumentController::class, 'searchForm']);
+Route::post('/search', [DocumentController::class, 'search']);
+
 Route::get('/', [ChatController::class, 'index']);
 
 Route::post('/chat', [ChatController::class, 'chat']);

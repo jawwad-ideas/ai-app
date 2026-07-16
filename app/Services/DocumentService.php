@@ -72,4 +72,13 @@ class DocumentService
             );
         }
     }
+
+    public function search(string $question): array
+    {
+        // Step 1: Create embedding for question
+        $embedding = $this->embeddingService->embed($question);
+
+        // Step 2: Search Qdrant
+        return $this->vectorService->search($embedding, 3);
+    }
 }
