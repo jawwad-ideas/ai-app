@@ -17,15 +17,22 @@ class VectorService
 
 
     private function request(
-        string $method,
-        string $endpoint,
-        array $data = []
-    ): array {
-        return Http::$method(
-            "{$this->url}{$endpoint}",
-            $data
-        )->json();
-    }
+    string $method,
+    string $endpoint,
+    array $data = []
+): array {
+
+    $response = Http::$method(
+        "{$this->url}{$endpoint}",
+        $data
+    );
+
+    \Log::info('Qdrant URL: ' . "{$this->url}{$endpoint}");
+    \Log::info('Status: ' . $response->status());
+    \Log::info('Body: ' . $response->body());
+
+    return $response->json();
+}
 
     public function createCollection(): array
     {
@@ -42,7 +49,7 @@ class VectorService
     }
 
     public function store(
-        int $id,
+        int|string $id,
         array $embedding,
         array $payload
     ): array {
@@ -58,6 +65,20 @@ class VectorService
                         'payload' => $payload,
                     ]
                 ]
+            ]
+        );
+    }
+
+
+    public function search(array $embedding, int $limit = 2): array
+    {
+        return $this->request(
+            'post',
+            "/collections/{$this->collection}/points/search",
+            [
+                'vector' => $embedding,
+                'limit' => $limit,
+                'with_payload' => true,
             ]
         );
     }

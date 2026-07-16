@@ -46,9 +46,17 @@ class KnowledgeController extends Controller
 
     public function search(Request $request)
     {
-        //
-        // Week 3 - Next Lesson
-        //
+        $request->validate([
+            'question' => 'required|string',
+        ]);
+
+        $embedding = $this->embeddingService->embed(
+            $request->question
+        );
+
+        $result = $this->vectorService->search($embedding);
+
+        return response()->json($result);
     }
 
     public function delete(int $id)

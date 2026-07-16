@@ -50,6 +50,32 @@ class LLMService extends GeminiClient
     }
 
 
+    public function generateWithContext(
+        string $question,
+        string $context
+    ){
+        $prompt = <<<PROMPT
+You are an HR assistant.
+
+Answer ONLY using the company knowledge below.
+
+If the answer is not found, say:
+"I couldn't find that information."
+
+Company Knowledge:
+
+{$context}
+
+Question:
+{$question}
+PROMPT;
+
+        return $this->generate($prompt);
+    }
+
+
+
+
     private function buildPrompt(string $prompt, string $responseType): string
     {
         if ($responseType !== 'json') {

@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChatController;
-use App\Http\Controllers\KnowledgeController;
+use App\Http\Controllers\DocumentController;
 use App\Services\EmbeddingService;
 use App\Services\SimilarityService;
 use App\Services\VectorService;
@@ -12,21 +12,16 @@ Route::get('/', function () {
 });
 
 
+Route::get('/documents', [DocumentController::class, 'index']);
+Route::post('/documents', [DocumentController::class, 'store']);
+
 Route::get('/', [ChatController::class, 'index']);
 
 Route::post('/chat', [ChatController::class, 'chat']);
 
+Route::post('/documents', [DocumentController::class, 'store']);
 
-Route::prefix('vector')->group(function () {
 
-    Route::post('/collection', [KnowledgeController::class, 'createCollection']);
-
-    Route::post('/store', [KnowledgeController::class, 'store']);
-
-    Route::post('/search', [KnowledgeController::class, 'search']);
-
-    Route::delete('/{id}', [KnowledgeController::class, 'delete']);
-});
 
 
 // Route::get('/vector/create', function (VectorService $vector) {

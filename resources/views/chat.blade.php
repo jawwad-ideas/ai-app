@@ -96,7 +96,7 @@ async function sendMessage() {
         const data = await response.json();
 
         // Show only the message
-        responseBox.innerHTML = data.message;
+        responseBox.innerHTML = data.message.message;
 
         // Clear textbox
         messageInput.value = '';

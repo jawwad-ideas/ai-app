@@ -10,10 +10,11 @@ class AgentService
 {
     public function __construct(
         private LLMService $llm,
+        private RAGService $rag,
         private ToolManager $toolManager,
     ) {}
 
-    public function execute(string $message): array
+    public function oldExecute(string $message): array
     {
         $responseType = $this->detectResponseType($message);
 
@@ -29,6 +30,34 @@ class AgentService
         }
 
         return $result;
+    }
+
+
+    public function execute(string $message): array
+    {
+        // Step 1: Retrieve relevant documents
+        $documents = $this->rag->retrieve($message);
+
+        //direct response from qudrant 
+        // return [
+        //     'success' => true,
+        //     'response_type' => 'text',
+        //     'message' => ['message' => $documents[0]['payload']['content'] ?? 'No information found.'],
+        //     'plan' => [],
+        // ];
+
+        // Step 2: Convert them into context
+        $context = $this->rag->buildContext($documents);
+
+        // Step 3: Ask Gemini using that context
+        $result = $this->llm->generateWithContext(
+            question: $message,
+            context: $context
+        );
+
+        return [
+            'message' => $result,
+        ];
     }
 
     private function detectResponseType(string $message): string
